@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import app from './config/app';
 
 @Module({
@@ -13,14 +13,21 @@ import app from './config/app';
       isGlobal: true,
       load: [app],
     }),
-    // TypeOrmModule.forRoot({
-    //   type: 'mongodb',
-    //   url: 'mongodb_servers',
-    //   autoLoadEntities: true,
-    //   synchronize: true,
-    //   useNewUrlParser: true,
-    //   logging: true,
-    // }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        ({
+          type: configService.get<string>('DB_DRIVER'),
+          host: configService.get<string>('MONGO_HOSTNAME'),
+          port: configService.get<string>('MONGO_PORT'),
+          username: configService.get<string>('MONGO_USERNAME'),
+          password: configService.get<string>('MONGO_PASSWORD'),
+          autoLoadEntities: true,
+          synchronize: true,
+          useNewUrlParser: true,
+          logging: true,
+        } as TypeOrmModule),
+    }),
     AuthModule,
     UsersModule,
   ],
