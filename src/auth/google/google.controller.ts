@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { GoogleGuard } from './google.guard';
 import { Request, Response } from 'express';
 import { JwtAuthService } from '../jwt/jwt-auth.service';
@@ -14,6 +14,11 @@ export class GoogleController {
   async googleAuth(@Req() _req) {
     console.log(_req);
     //guard redirection
+  }
+
+  @Post()
+  async googleAuthPost(@Req() _req) {
+    console.log(_req);
   }
 
   @Get('redirect')
